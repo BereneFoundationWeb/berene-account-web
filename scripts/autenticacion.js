@@ -33,7 +33,7 @@
             localStorage.setItem("berene_auth", "ok");
             localStorage.setItem("berene_user", name);
 
-            // Enviar mensaje al proyecto de TurboWarp
+            // Enviar mensaje a TurboWarp
             if (window.parent) {
                 window.parent.postMessage("berene-login:ok|" + name, "*");
             }
@@ -64,11 +64,11 @@
                 localStorage.setItem("berene_auth", "ok");
                 localStorage.setItem("berene_user", user.name);
 
-                // Login exitoso
+                // Enviar mensaje a TurboWarp
                 if (window.parent) {
-                window.parent.postMessage("berene-login:ok|"+user.name, "*");
+                    window.parent.postMessage("berene-login:ok|" + user.name, "*");
                 }
-                
+
                 alert("✅ Inicio de sesión exitoso. Bienvenido/a, " + user.name);
                 window.location.href = "home.html";
             } else {
@@ -77,12 +77,12 @@
         });
     }
 
-    // --- Función para cerrar sesión (opcional) ---
+    // --- Función para cerrar sesión ---
     window.logout = function() {
         localStorage.removeItem("berene_auth");
         localStorage.removeItem("berene_user");
 
-        // Informar al proyecto de TurboWarp que cerró sesión
+        // Enviar mensaje a TurboWarp de logout
         if (window.parent) {
             window.parent.postMessage("berene-login:no", "*");
         }
@@ -92,5 +92,3 @@
     }
 
 })();
-
-
