@@ -33,6 +33,11 @@
             localStorage.setItem("berene_auth", "ok");
             localStorage.setItem("berene_user", name);
 
+            // Enviar mensaje al proyecto de TurboWarp
+            if (window.parent) {
+                window.parent.postMessage("berene-login:ok|" + name, "*");
+            }
+
             alert("✅ Registro exitoso. Bienvenido/a, " + name);
             window.location.href = "home.html";
         });
@@ -58,11 +63,11 @@
                 // Guardar sesión
                 localStorage.setItem("berene_auth", "ok");
                 localStorage.setItem("berene_user", user.name);
-                // Usuario acaba de loguearse
-                if (window.parent) {
-                window.parent.postMessage({ type: "berene-login", status: "ok" }, "*");
-                }
 
+                // Enviar mensaje al proyecto de TurboWarp como string
+                if (window.parent) {
+                    window.parent.postMessage("berene-login:ok|" + user.name, "*");
+                }
 
                 alert("✅ Inicio de sesión exitoso. Bienvenido/a, " + user.name);
                 window.location.href = "home.html";
@@ -76,6 +81,12 @@
     window.logout = function() {
         localStorage.removeItem("berene_auth");
         localStorage.removeItem("berene_user");
+
+        // Informar al proyecto de TurboWarp que cerró sesión
+        if (window.parent) {
+            window.parent.postMessage("berene-login:no", "*");
+        }
+
         alert("✅ Sesión cerrada");
         window.location.href = "index.html";
     }
