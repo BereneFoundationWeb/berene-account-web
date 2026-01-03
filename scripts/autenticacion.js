@@ -64,11 +64,11 @@
                 localStorage.setItem("berene_auth", "ok");
                 localStorage.setItem("berene_user", user.name);
 
-                // Enviar mensaje al proyecto de TurboWarp como string
+                // Login exitoso
                 if (window.parent) {
-                    window.parent.postMessage("berene-login:ok|" + user.name, "*");
+                window.parent.postMessage("berene-login:ok|"+user.name, "*");
                 }
-
+                
                 alert("✅ Inicio de sesión exitoso. Bienvenido/a, " + user.name);
                 window.location.href = "home.html";
             } else {
@@ -92,4 +92,5 @@
     }
 
 })();
+
 
