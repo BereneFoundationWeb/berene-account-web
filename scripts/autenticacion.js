@@ -58,6 +58,11 @@
                 // Guardar sesión
                 localStorage.setItem("berene_auth", "ok");
                 localStorage.setItem("berene_user", user.name);
+                // Usuario acaba de loguearse
+                if (window.parent) {
+                window.parent.postMessage({ type: "berene-login", status: "ok" }, "*");
+                }
+
 
                 alert("✅ Inicio de sesión exitoso. Bienvenido/a, " + user.name);
                 window.location.href = "home.html";
@@ -76,3 +81,4 @@
     }
 
 })();
+
