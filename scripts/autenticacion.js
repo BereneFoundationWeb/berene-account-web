@@ -66,7 +66,7 @@
 
                 // Enviar mensaje a TurboWarp
                 if (window.parent) {
-                    window.parent.postMessage("berene-login:ok|" + user.name, "*");
+                    window.parent.postMessage(user.name, "*");
                 }
 
                 alert("✅ Inicio de sesión exitoso. Bienvenido/a, " + user.name);
@@ -92,3 +92,4 @@
     }
 
 })();
+
