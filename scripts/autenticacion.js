@@ -2,9 +2,9 @@
     const loginBtn = document.getElementById("loginButton");
     const registerBtn = document.getElementById("registerButton");
 
-    // Registro de usuario
+    // --- Registro de usuario ---
     if (registerBtn) {
-        registerBtn.addEventListener("click", async (e) => {
+        registerBtn.addEventListener("click", (e) => {
             e.preventDefault();
 
             const name = document.getElementById("registerName").value.trim();
@@ -16,33 +16,36 @@
                 return;
             }
 
-            try {
-                
-                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
+            // Guardamos usuarios en LocalStorage
+            const users = JSON.parse(localStorage.getItem("users")) || [];
 
-             
-                await user.updateProfile({ displayName: name });
-
-               
-                await db.collection("usuarios").doc(user.uid).set({
-                    nombre: name,
-                    correo: email,
-                    uid: user.uid,
-                    creadoEn: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                alert("✅ Registro exitoso. Bienvenido/a, " + name);
-                window.location.href = "home.html";
-            } catch (error) {
-                alert("❌ Error: " + error.message);
+            // Comprobar si ya existe el email
+            if (users.some(u => u.email === email)) {
+                alert("❌ Este correo ya está registrado.");
+                return;
             }
+
+            // Agregar usuario nuevo
+            users.push({ name, email, password });
+            localStorage.setItem("users", JSON.stringify(users));
+
+            // Guardar sesión activa
+            localStorage.setItem("berene_auth", "ok");
+            localStorage.setItem("berene_user", name);
+
+            // Enviar mensaje a TurboWarp
+            if (window.parent) {
+                window.parent.postMessage("berene-login:ok|" + name, "*");
+            }
+
+            alert("✅ Registro exitoso. Bienvenido/a, " + name);
+            window.location.href = "home.html";
         });
     }
 
-    // Inicio de sesión
+    // --- Inicio de sesión ---
     if (loginBtn) {
-        loginBtn.addEventListener("click", async (e) => {
+        loginBtn.addEventListener("click", (e) => {
             e.preventDefault();
 
             const email = document.getElementById("loginEmail").value.trim();
@@ -53,13 +56,39 @@
                 return;
             }
 
-            try {
-                await firebase.auth().signInWithEmailAndPassword(email, password);
-                alert("Inicio de sesión exitoso");
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                // Guardar sesión
+                localStorage.setItem("berene_auth", "ok");
+                localStorage.setItem("berene_user", user.name);
+
+                // Enviar mensaje a TurboWarp
+                if (window.parent) {
+                    window.parent.postMessage("berene-login:ok|" + user.name, "*");
+                }
+
+                alert("✅ Inicio de sesión exitoso. Bienvenido/a, " + user.name);
                 window.location.href = "home.html";
-            } catch (error) {
-                alert("Error: " + error.message);
+            } else {
+                alert("❌ Email o contraseña incorrectos");
             }
         });
     }
+
+    // --- Función para cerrar sesión ---
+    window.logout = function() {
+        localStorage.removeItem("berene_auth");
+        localStorage.removeItem("berene_user");
+
+        // Enviar mensaje a TurboWarp de logout
+        if (window.parent) {
+            window.parent.postMessage("berene-login:no", "*");
+        }
+
+        alert("✅ Sesión cerrada");
+        window.location.href = "index.html";
+    }
+
 })();
